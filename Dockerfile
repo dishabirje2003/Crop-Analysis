@@ -1,20 +1,21 @@
 # Use PHP with Apache
 FROM php:8.2-apache
 
-# Install Python and pip
-RUN apt-get update && apt-get install -y python3 python3-pip
+# Install Python, pip, and venv
+RUN apt-get update && apt-get install -y python3 python3-pip python3-venv
 
-# Copy your entire project into the container
+# Copy your project files
 COPY . /var/www/html/
-
-# Set working directory
 WORKDIR /var/www/html
 
-# Install Python dependencies
-RUN pip3 install -r requirements.txt
+# Create a virtual environment and install Python dependencies inside it
+RUN python3 -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
 
-# Expose port 80 for web traffic
+# Expose port 80
 EXPOSE 80
 
-# Start Apache server
+# Start Apache
 CMD ["apache2-foreground"]
